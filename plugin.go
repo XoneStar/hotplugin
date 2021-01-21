@@ -201,7 +201,7 @@ func (p *Plugin) GetFunc(fun string) (f func(...interface{}) []interface{}, err 
 		info.inTypes[i] = info.rfv.Type().In(i)
 	}
 	for i := 0; i < lo; i++ {
-		info.inTypes[i] = info.rfv.Type().Out(i)
+		info.outTypes[i] = info.rfv.Type().Out(i)
 	}
 	f = func(params ...interface{}) []interface{} {
 		out := make([]interface{}, len(info.outTypes))
