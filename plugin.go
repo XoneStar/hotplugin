@@ -58,14 +58,15 @@ type pluginFuncInfo struct {
 }
 
 type Plugin struct {
-	m       Manager
-	name    string
-	version uint64
-	path    string
-	plugin  *plugin.Plugin
-	status  PluginStatus
-	refs    int
-	cache   map[string]*pluginFuncInfo
+	m           Manager
+	name        string
+	version     uint64
+	path        string
+	description string
+	plugin      *plugin.Plugin
+	status      PluginStatus
+	refs        int
+	cache       map[string]*pluginFuncInfo
 }
 
 func NewPlugin(path string, m Manager) *Plugin {
@@ -118,9 +119,10 @@ func (p *Plugin) Load() error {
 		p.setStatus(PluginStatusNone)
 		return e
 	}
-	register := func(name string, version uint64) error {
+	register := func(name string, version uint64, description string) error {
 		p.name = name
 		p.version = version
+		p.description = description
 		s := fmt.Sprintf("load plugin: %s, version: 0x%x", p.name, p.version)
 		p1, e1 := p.m.GetPluginWithVersion(name, version)
 		if p1 != nil {
@@ -135,7 +137,7 @@ func (p *Plugin) Load() error {
 			return nil
 		}
 	}
-	e = f.(func(func(string, uint64) error) error)(register)
+	e = f.(func(func(string, uint64, string) error) error)(register)
 
 	return e
 }

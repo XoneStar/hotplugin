@@ -96,7 +96,7 @@ func (m *manager) OnError(p *Plugin, err *PluginError) {
 func (m *manager) OnUnloaded(p1 *Plugin) {
 	name := p1.Name()
 	version := p1.Version()
-	log.Print(name, " loaded")
+	log.Print(name, " UnLoaded")
 	if mp, ok := m.loaded[name]; ok {
 		delete(mp, version)
 		if len(mp) == 0 {
