@@ -39,6 +39,7 @@ type Manager interface {
 	Run() error
 	IsRunning() bool
 	GetPlugin(name string) (*Plugin, error)
+	GetLoadedPlugins() []*Plugin
 	GetPluginWithVersion(name string, version uint64) (*Plugin, error)
 	GetFunc(module, function string) (f func(...interface{}) []interface{}, err error)
 	Call(module, function string, args ...interface{}) []interface{}
@@ -129,7 +130,7 @@ func (m *manager) loadAll() error {
 		d, e := f.Readdir(100)
 		if e != nil {
 			if e == io.EOF {
-				f.Seek(0, 0)
+				_, _ = f.Seek(0, 0)
 				break
 			}
 			return e
@@ -142,7 +143,7 @@ func (m *manager) loadAll() error {
 			log.Println(path)
 			p := NewPlugin(path, m)
 			m.cache[path] = p
-			p.Load()
+			_ = p.Load()
 		}
 	}
 	return nil
@@ -185,15 +186,15 @@ func (m *manager) Run() error {
 					m.cache[path] = p
 				}
 				if e.Op&fsnotify.Write == fsnotify.Write {
-					p.Reload()
+					_ = p.Reload()
 					continue
 				}
 				if e.Op&fsnotify.Create == fsnotify.Create {
-					p.Load()
+					_ = p.Load()
 					continue
 				}
 				if e.Op&fsnotify.Remove == fsnotify.Remove {
-					p.Unload()
+					_ = p.Unload()
 					continue
 				}
 			case err := <-m.watcher.Errors:
@@ -205,6 +206,13 @@ func (m *manager) Run() error {
 	<-c
 	close(c)
 	return nil
+}
+
+func (m *manager) GetLoadedPlugins() (plugins []*Plugin) {
+	for _, v := range m.cache {
+		plugins = append(plugins, v)
+	}
+	return plugins
 }
 
 func (m *manager) GetPlugin(name string) (*Plugin, error) {

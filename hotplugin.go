@@ -43,6 +43,10 @@ func Call(module, function string, args ...interface{}) []interface{} {
 	return f(args...)
 }
 
+func GetLoadedPlugins() []*Plugin {
+	return defaultManager.GetLoadedPlugins()
+}
+
 func GetPlugin(name string) (*Plugin, error) {
 	return defaultManager.GetPlugin(name)
 }
