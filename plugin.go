@@ -59,6 +59,7 @@ type pluginFuncInfo struct {
 
 type Plugin struct {
 	m           Manager
+	id          string
 	name        string
 	version     uint64
 	path        string
@@ -119,7 +120,8 @@ func (p *Plugin) Load() error {
 		p.setStatus(PluginStatusNone)
 		return e
 	}
-	register := func(name string, version uint64, description string) error {
+	register := func(pluginId, name string, version uint64, description string) error {
+		p.id = pluginId
 		p.name = name
 		p.version = version
 		p.description = description
@@ -137,7 +139,7 @@ func (p *Plugin) Load() error {
 			return nil
 		}
 	}
-	e = f.(func(func(string, uint64, string) error) error)(register)
+	e = f.(func(func(string, string, uint64, string) error) error)(register)
 
 	return e
 }

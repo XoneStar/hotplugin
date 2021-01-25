@@ -26,13 +26,14 @@ import (
 )
 
 const (
+	pluginId          = "1"
 	pluginName        = "testplugin"
 	pluginVersion     = 0x00010000
 	pluginDescription = "test plugin"
 )
 
-func Load(register func(name string, version uint64, description string) error) error {
-	err := register(pluginName, pluginVersion, pluginDescription)
+func Load(register func(pluginId, name string, version uint64, description string) error) error {
+	err := register(pluginId, pluginName, pluginVersion, pluginDescription)
 	if err != nil {
 		log.Println(err.Error())
 		return err
